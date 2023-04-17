@@ -2,7 +2,6 @@
 #define __IMAGE_H__
 
 #include <fstream>
-#include <string_view>
 
 #pragma pack(push,1)
 struct TGA_Header {
@@ -78,9 +77,9 @@ public:
 	TGAImage();
 	TGAImage(int w, int h, int bpp);
 	TGAImage(const TGAImage &img);
-   TGAImage(std::string_view filename);
-	bool read_tga_file(std::string_view filename);
-	bool write_tga_file(std::string_view filename, bool rle=true);
+   TGAImage(std::string const& filename);
+	bool read_tga_file(std::string const& filename);
+	bool write_tga_file(std::string const& filename, bool rle=true);
 	bool flip_horizontally();
 	bool flip_vertically();
 	bool scale(int w, int h);

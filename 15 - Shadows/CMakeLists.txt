@@ -26,10 +26,10 @@ set(COMMON_CPP_FILES
         TGAColor.cpp
         )
 
-add_executable(TestAllShaders
-        TestAllShaders.cpp
-        ${COMMON_CPP_FILES}
-        )
+#add_executable(TestAllShaders
+#        TestAllShaders.cpp
+#        ${COMMON_CPP_FILES}
+#        )
 
 add_executable(OneShader
         OneShader.cpp

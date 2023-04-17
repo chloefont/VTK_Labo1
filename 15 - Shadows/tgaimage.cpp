@@ -26,7 +26,7 @@ TGAImage::TGAImage(const TGAImage &img) {
 	memcpy(data, img.data, nbytes);
 }
 
-TGAImage::TGAImage(std::string_view filename) :TGAImage() {
+TGAImage::TGAImage(std::string const& filename) :TGAImage() {
    if(not read_tga_file(filename))
       std::cerr << "Could not read " << filename << std::endl;
 }
@@ -48,11 +48,11 @@ TGAImage & TGAImage::operator =(const TGAImage &img) {
 	return *this;
 }
 
-bool TGAImage::read_tga_file(std::string_view filename) {
+bool TGAImage::read_tga_file(std::string const& filename) {
 	if (data) delete [] data;
 	data = NULL;
 	std::ifstream in;
-	in.open (filename, std::ios::binary);
+	in.open(filename, std::ios::binary);
 	if (!in.is_open()) {
 		std::cerr << "can't open file " << filename << "\n";
 		in.close();
@@ -154,7 +154,7 @@ bool TGAImage::load_rle_data(std::ifstream &in) {
 	return true;
 }
 
-bool TGAImage::write_tga_file(std::string_view filename, bool rle) {
+bool TGAImage::write_tga_file(std::string const& filename, bool rle) {
    flip_vertically();
    unsigned char developer_area_ref[4] = {0, 0, 0, 0};
 	unsigned char extension_area_ref[4] = {0, 0, 0, 0};

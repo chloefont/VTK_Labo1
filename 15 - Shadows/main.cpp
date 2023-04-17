@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include <utility>
+#include <limits>
 
 #include "tgaimage.h"
 #include "model.h"
