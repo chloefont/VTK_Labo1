@@ -42,7 +42,7 @@ bool est_dans_le_triangle(Vec3f* t, Vec3f pt) {
    return ( b.x >= 0 and b.y >= 0 and b.z >= 0 );
 }
 
-void triangle(Vec3f screen[3], Shader& shader, float* zbuffer, TGAImage &image) {
+void triangle(Vec3f screen[3], Shader& shader, float* zbuffer, std::tuple<int, float>* zbufferShades, TGAImage &image, size_t id) {
    auto bbox = boite_englobante(image, screen);
 
 //#pragma omp parallel for
@@ -56,6 +56,16 @@ void triangle(Vec3f screen[3], Shader& shader, float* zbuffer, TGAImage &image) 
                TGAColor color;
                if( shader.fragment(b, color) ) {
                   zbuffer[x + image.get_width() * y] = p.z;
+
+                  if (get<0>(zbufferShades[x + image.get_width() * y]) == id) {
+                     //zbufferShades[x + image.get_width() * y] = p.z;
+                     color = TGAColor(255,255,255, 255);
+                  }
+
+//                  if (zbufferShades[x + image.get_width() * y] < p.z) {
+//                     //zbufferShades[x + image.get_width() * y] = p.z;
+//                     color = TGAColor(255,255,255, 255);
+//                  }
                   image.set(x,y,color);
                }
             }
