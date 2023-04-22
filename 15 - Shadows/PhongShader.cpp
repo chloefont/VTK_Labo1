@@ -11,6 +11,14 @@ bool PhongShader::fragment(Vec3f bary, TGAColor &color) const {
    TGAColor dColor = diffuseColor;
    auto n = PhongNormals::fragment(light, bary, dColor);
 
+   if (!zbufferShadow.empty()) {
+       VecH projectionInv = Matrix4x4(projection).inverse() * VecH(bary);
+       VecH viewInv = Matrix4x4(view).inverse() * projectionInv;
+       VecH world = Matrix4x4(viewport).inverse() * viewInv;
+
+
+   }
+
    TGAColor sColor = specularColor;
    PhongNormals::specular(light,camera,n,specularPower,sColor);
 
