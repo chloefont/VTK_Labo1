@@ -15,6 +15,7 @@
 #include "NormalShader.h"
 
 #include "PhongShader.h"
+#include "ShadowShader.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ int main() {
     // calculate zbuffer from light view
     Camera cameraLight{.eye = {3, 10, 10}, .center = {0, 0, 0}, .up = {0, 1, 0}};
 
-    NormalShader phongShaderLight;
+    ShadowShader phongShaderLight;
 
     TGAImage imageLight(imageW, imageH, TGAImage::RGB);
 
@@ -64,7 +65,7 @@ int main() {
 
 
 
-    cout << *std::max_element(zbufferShadow.begin(), zbufferShadow.end()) << endl;
+    //cout << *std::max_element(zbufferShadow.begin(), zbufferShadow.end()) << endl;
 
     // calculate zbuffer from camera view
     Camera camera{.eye = {5, 2, 5}, .center = {0, 0, 0}, .up = {0, 1, 0}};
@@ -87,9 +88,11 @@ int main() {
     phongShader.light = {0, 1, 1};
     phongShader.light.normalize();
     phongShader.width = imageW;
+    phongShader.height = imageH;
+    phongShader.transformation = phongShaderLight.viewport * phongShaderLight.projection * phongShaderLight.view;
+    phongShader.screen = vector<Vec3f>(3, Vec3f(0, 0, 0));
 
     phongShader.zbufferShadow = zbufferShadow;
-    phongShader.lightViewport = cameraLight.view();
 
     TGAImage image(imageW, imageH, TGAImage::RGB);
 
@@ -106,7 +109,7 @@ int main() {
         triangle(screen, phongShader, zbuffer.data(), image);
     }
 
-    cout << *std::max_element(zbuffer.begin(), zbuffer.end());
+    //cout << *std::max_element(zbuffer.begin(), zbuffer.end());
 
     string filename = "OneShader.tga";
     image.write_tga_file(filename.data());

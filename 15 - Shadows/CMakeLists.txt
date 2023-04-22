@@ -24,7 +24,7 @@ set(COMMON_CPP_FILES
         PhongNormalShader.cpp
         PhongNormalTextureShader.cpp
         TGAColor.cpp
-        )
+        ShadowShader.cpp)
 
 #add_executable(TestAllShaders
 #        TestAllShaders.cpp
