@@ -11,6 +11,8 @@ bool PhongShader::fragment(Vec3f bary, TGAColor &color) const {
    TGAColor dColor = diffuseColor;
    auto n = PhongNormals::fragment(light, bary, dColor);
 
+   //
+
    VecH projectionInv = Matrix4x4(projection).inverse() * VecH(bary);
    VecH viewInv = Matrix4x4(view).inverse() * projectionInv;
    VecH world = Matrix4x4(viewport).inverse() * viewInv;
@@ -22,9 +24,9 @@ bool PhongShader::fragment(Vec3f bary, TGAColor &color) const {
 
    color = ambientColor * ambientWeight + dColor * diffuseWeight + sColor * specularWeight;
 
-    if (zbufferShadow[screen.x + screen.y * width] < screen.z - 10) {
-        color = color * 0.5f;
-        //color = TGAColor(255,0,0,255);
+    if (zbufferShadow[screen.x + screen.y * width] > screen.z) {
+        //color = color * 0.5f;
+        color = TGAColor(255,0,0,255);
     }
    return true;
 }

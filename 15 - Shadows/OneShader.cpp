@@ -2,6 +2,8 @@
 #include <cmath>
 #include <algorithm>
 #include <utility>
+#include <iostream>
+#include <string>
 
 #include "tgaimage.h"
 #include "model.h"
@@ -46,6 +48,11 @@ int main() {
     phongShaderLight.light = {0, 1, 1};
     phongShaderLight.light.normalize();
 
+    int const viewW = imageW, viewH = imageH;
+
+    phongShaderLight.viewport = make_viewport(0, 0, viewW, viewH, 0.7);
+
+
 
     for (size_t f = 0; f < size_t(model.nfaces()); ++f) {
         Vec3f screen[3];
@@ -55,10 +62,9 @@ int main() {
         triangle(screen, phongShaderLight, zbufferShadow.data(), imageLight);
     }
 
-    int const viewW = imageW, viewH = imageH;
-    phongShaderLight.viewport = make_viewport(0, 0, viewW, viewH, 0.7);
 
 
+    cout << *std::max_element(zbufferShadow.begin(), zbufferShadow.end()) << endl;
 
     // calculate zbuffer from camera view
     Camera camera{.eye = {5, 2, 5}, .center = {0, 0, 0}, .up = {0, 1, 0}};
@@ -92,7 +98,6 @@ int main() {
     vector<float> zbuffer(imageW * imageH, std::numeric_limits<float>::lowest());
     fill(zbuffer.begin(), zbuffer.end(), std::numeric_limits<float>::lowest());
 
-
     for (size_t f = 0; f < size_t(model.nfaces()); ++f) {
         Vec3f screen[3];
         for (size_t v = 0; v < 3; ++v) {
@@ -100,6 +105,8 @@ int main() {
         }
         triangle(screen, phongShader, zbuffer.data(), image);
     }
+
+    cout << *std::max_element(zbuffer.begin(), zbuffer.end());
 
     string filename = "OneShader.tga";
     image.write_tga_file(filename.data());
