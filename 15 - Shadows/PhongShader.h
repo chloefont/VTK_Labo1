@@ -10,6 +10,7 @@ struct PhongShader
    TGAColor ambientColor, diffuseColor, specularColor;
    float ambientWeight = 0.3f, diffuseWeight = 0.7f, specularWeight = 0.f;
    float specularPower = 10.f;
+   int width;
    std::vector<float> zbufferShadow;
    Matrix<4, 4> lightViewport;
    virtual Vec3f vertex(size_t face, size_t vert);

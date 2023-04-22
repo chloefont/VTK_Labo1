@@ -87,7 +87,7 @@ public:
     };
 
    template<size_t N>
-   Matrix<rows,N> operator*(const Matrix<cols,N>& a) {
+   Matrix<rows,N> operator*(const Matrix<cols,N>& a) const {
       Matrix<rows,N> result;
       for (size_t i=0; i<rows; i++) {
          for (size_t j=0; j<N; j++) {

@@ -80,6 +80,7 @@ int main() {
     phongShader.frontfaceCulling = false;
     phongShader.light = {0, 1, 1};
     phongShader.light.normalize();
+    phongShader.width = imageW;
 
     phongShader.zbufferShadow = zbufferShadow;
     phongShader.lightViewport = cameraLight.view();
