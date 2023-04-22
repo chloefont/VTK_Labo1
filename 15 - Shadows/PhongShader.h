@@ -13,9 +13,9 @@ struct PhongShader
    int width;
    int height;
    std::vector<Vec3f> screen;
-   Matrix4x4 transformation;
-   Vec3f currentPoint;
-
+   /// Transformation from world to light view
+   Matrix4x4 toLightScreenTransform;
+   /// Zbuffer from light view
    std::vector<float> zbufferShadow;
    virtual Vec3f vertex(size_t face, size_t vert);
    virtual bool fragment(Vec3f bary, TGAColor &color) const;

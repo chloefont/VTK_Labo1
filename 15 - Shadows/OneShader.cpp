@@ -1,8 +1,5 @@
 #include <vector>
 #include <cmath>
-#include <algorithm>
-#include <utility>
-#include <iostream>
 #include <string>
 
 #include "tgaimage.h"
@@ -12,7 +9,6 @@
 #include "Camera.h"
 #include "Viewport.h"
 #include "Triangle.h"
-#include "NormalShader.h"
 
 #include "PhongShader.h"
 #include "ShadowShader.h"
@@ -28,46 +24,40 @@ int main() {
     model.normalize();
 
     int const imageW = 800, imageH = 800;
+    int const viewW = imageW, viewH = imageH;
 
-    // calculate zbuffer from light view
+    // Calculate zbuffer from light point of view
     Camera cameraLight{.eye = {3, 10, 10}, .center = {0, 0, 0}, .up = {0, 1, 0}};
 
-    ShadowShader phongShaderLight;
+    ShadowShader shadowShader;
+
+    shadowShader.model = &model;
+    shadowShader.view = cameraLight.view();
+    shadowShader.projection = cameraLight.projection();
+    shadowShader.light = {0, 0, 1};
+    shadowShader.camera = cameraLight.direction();
+    shadowShader.backfaceCulling = false;
+    shadowShader.frontfaceCulling = false;
+    shadowShader.light = {0, 1, 1};
+    shadowShader.light.normalize();
+
+    shadowShader.viewport = make_viewport(0, 0, viewW, viewH, 0.7);
 
     TGAImage imageLight(imageW, imageH, TGAImage::RGB);
 
     vector<float> zbufferShadow(imageW * imageH, std::numeric_limits<float>::lowest());
     fill(zbufferShadow.begin(), zbufferShadow.end(), std::numeric_limits<float>::lowest());
 
-    phongShaderLight.model = &model;
-    phongShaderLight.view = cameraLight.view();
-    phongShaderLight.projection = cameraLight.projection();
-    phongShaderLight.light = {0, 0, 1};
-    phongShaderLight.camera = cameraLight.direction();
-    phongShaderLight.backfaceCulling = false;
-    phongShaderLight.frontfaceCulling = false;
-    phongShaderLight.light = {0, 1, 1};
-    phongShaderLight.light.normalize();
-
-    int const viewW = imageW, viewH = imageH;
-
-    phongShaderLight.viewport = make_viewport(0, 0, viewW, viewH, 0.7);
-
-
-
     for (size_t f = 0; f < size_t(model.nfaces()); ++f) {
         Vec3f screen[3];
         for (size_t v = 0; v < 3; ++v) {
-            screen[v] = phongShaderLight.vertex(f, v);
+            screen[v] = shadowShader.vertex(f, v);
         }
-        triangle(screen, phongShaderLight, zbufferShadow.data(), imageLight);
+        triangle(screen, shadowShader, zbufferShadow.data(), imageLight);
     }
 
 
-
-    //cout << *std::max_element(zbufferShadow.begin(), zbufferShadow.end()) << endl;
-
-    // calculate zbuffer from camera view
+    // Render from camera point of view
     Camera camera{.eye = {5, 2, 5}, .center = {0, 0, 0}, .up = {0, 1, 0}};
 
     PhongShader phongShader;
@@ -89,7 +79,7 @@ int main() {
     phongShader.light.normalize();
     phongShader.width = imageW;
     phongShader.height = imageH;
-    phongShader.transformation = phongShaderLight.viewport * phongShaderLight.projection * phongShaderLight.view;
+    phongShader.toLightScreenTransform = shadowShader.viewport * shadowShader.projection * shadowShader.view;
     phongShader.screen = vector<Vec3f>(3, Vec3f(0, 0, 0));
 
     phongShader.zbufferShadow = zbufferShadow;
@@ -108,8 +98,6 @@ int main() {
         }
         triangle(screen, phongShader, zbuffer.data(), image);
     }
-
-    //cout << *std::max_element(zbuffer.begin(), zbuffer.end());
 
     string filename = "OneShader.tga";
     image.write_tga_file(filename.data());
